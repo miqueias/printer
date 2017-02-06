@@ -685,7 +685,7 @@ public class PrinterActivity extends AppCompatActivity {
                     myTexto = myTexto + "Jogador: " + ticket.gambler_name + "\n";
                     myTexto = myTexto + "Valor da Aposta: " + ticket.ticket_value + "\n";
                     myTexto = myTexto + "Data da Aposta: " + ticket.validated_date + "\n";
-                    myTexto = myTexto + "CPF: " + ticket.validator.cpf + "\n";
+                    myTexto = myTexto + "CPF: " + ticket.validator.cpf + "\n\n";
                     myTexto = myTexto + "=== APOSTAS ===" + "\n";
 
                     if (ticket.betting.size() > 0) {
@@ -697,7 +697,9 @@ public class PrinterActivity extends AppCompatActivity {
                             myTexto = myTexto + "Campeonato: " + betting.game.championship + "\n";
                             myTexto = myTexto + "Data do Jogo: " + betting.game.game_date + "\n";
                             myTexto = myTexto + "Hora do Jogo: " + betting.game.game_time + "\n";
-                            myTexto = myTexto + "\n\n";
+                            myTexto = myTexto + "\n";
+
+                            betting = null;
                         }
                     }
                 } else {
