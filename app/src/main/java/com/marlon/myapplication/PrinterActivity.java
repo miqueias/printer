@@ -56,6 +56,10 @@ import java.util.UUID;
 
 import network.PrinterServer;
 import network.PrinterServerListener;
+import pojo.Betting;
+import pojo.Game;
+import pojo.Ticket;
+import pojo.Validator;
 import util.CryptographyHelper;
 import util.DeviceListActivity;
 import util.HexUtil;
@@ -100,6 +104,7 @@ public class PrinterActivity extends AppCompatActivity {
     private RC663 mRC663;
     private EditText etTexto;
     private String myTexto;
+    private Ticket ticket;
 
     /**
      * Called when the activity is first created.
@@ -673,7 +678,33 @@ public class PrinterActivity extends AppCompatActivity {
             @Override
             public void run(ProgressDialog dialog, Printer printer) throws IOException {
                 StringBuffer textBuffer = new StringBuffer();
-                textBuffer.append("{reset}" + myTexto + "teste");
+
+                if (ticket != null) {
+
+                    myTexto = "";
+                    myTexto = myTexto + "Jogador: " + ticket.gambler_name + "\n";
+                    myTexto = myTexto + "Valor da Aposta: " + ticket.ticket_value + "\n";
+                    myTexto = myTexto + "Data da Aposta: " + ticket.validated_date + "\n";
+                    myTexto = myTexto + "CPF: " + ticket.validator.cpf + "\n";
+                    myTexto = myTexto + "=== APOSTAS ===" + "\n";
+
+                    if (ticket.betting.size() > 0) {
+                        for (int i = 0; i < ticket.betting.size(); i++) {
+
+                            Betting betting = ticket.betting.get(i);
+
+                            myTexto = myTexto + "Jogo: " + betting.game.home_team + " x " + betting.game.out_team + "\n";
+                            myTexto = myTexto + "Campeonato: " + betting.game.championship + "\n";
+                            myTexto = myTexto + "Data do Jogo: " + betting.game.game_date + "\n";
+                            myTexto = myTexto + "Hora do Jogo: " + betting.game.game_time + "\n";
+                            myTexto = myTexto + "\n\n";
+                        }
+                    }
+                } else {
+                    myTexto = "NÃO HÁ DADOS PARA IMPRIMIR";
+                }
+
+                textBuffer.append(myTexto);
 
                 printer.reset();
                 printer.printTaggedText(textBuffer.toString());
@@ -911,37 +942,80 @@ public class PrinterActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
-                    // Getting JSON Array node
-                    JSONArray contacts = jsonObj.getJSONArray("contacts");
+                    ticket = new Ticket();
+
+                    ticket.id = Integer.parseInt(jsonObj.get("id").toString());
+                    ticket.gambler_name = jsonObj.get("gambler_name").toString();
+                    ticket.ticket_value = jsonObj.get("ticket_value").toString();
+                    ticket.validated_user = Integer.parseInt(jsonObj.get("validated_user").toString());
+                    ticket.validated_date = jsonObj.get("validated_date").toString();
+                    ticket.validated_commission = jsonObj.get("validated_commission").toString();
+                    ticket.created_at = jsonObj.get("created_at").toString();
+                    ticket.updated_at = jsonObj.get("updated_at").toString();
+                    ticket.deleted_at = jsonObj.get("deleted_at").toString();
+
+                    JSONObject jsonObjectValidator = jsonObj.getJSONObject("validator");
+
+                    Validator validator = new Validator();
+
+                    validator.id = Integer.parseInt(jsonObjectValidator.get("id").toString());
+                    validator.email = jsonObjectValidator.get("email").toString();
+                    validator.cpf = jsonObjectValidator.get("cpf").toString();
+                    validator.pin = jsonObjectValidator.get("pin").toString();
+                    validator.role_id = Integer.parseInt(jsonObjectValidator.get("role_id").toString());
+                    validator.first_name = jsonObjectValidator.get("first_name").toString();
+                    validator.last_name = jsonObjectValidator.get("last_name").toString();
+                    validator.phone = jsonObjectValidator.get("phone").toString();
+                    validator.city = jsonObjectValidator.get("city").toString();
+                    validator.neighborhood = jsonObjectValidator.get("neighborhood").toString();
+                    validator.street = jsonObjectValidator.get("street").toString();
+                    validator.street_number = jsonObjectValidator.get("street_number").toString();
+                    validator.commission = jsonObjectValidator.get("commission").toString();
+                    validator.limit_amount = jsonObjectValidator.get("limit_amount").toString();
+                    validator.limit_money_day = jsonObjectValidator.get("limit_money_day").toString();
+                    validator.active = jsonObjectValidator.get("active").toString();
+                    validator.created_at = jsonObjectValidator.get("created_at").toString();
+                    validator.updated_at = jsonObjectValidator.get("updated_at").toString();
+                    validator.deleted_at = jsonObjectValidator.get("deleted_at").toString();
+
+                    ticket.validator = validator;
+
+                    JSONArray jsonArrayBetting = jsonObj.getJSONArray("betting");
 
                     // looping through All Contacts
-                    for (int i = 0; i < contacts.length(); i++) {
-                        JSONObject c = contacts.getJSONObject(i);
+                    Betting betting = new Betting();
+                    ArrayList<Betting> bettings = new ArrayList<>();
+                    for (int i = 0; i < jsonArrayBetting.length(); i++) {
+                        JSONObject jsonObjectBetting = jsonArrayBetting.getJSONObject(i);
 
-                        String id = c.getString("id");
-                        String name = c.getString("name");
-                        String email = c.getString("email");
-                        String address = c.getString("address");
-                        String gender = c.getString("gender");
 
-                        // Phone node is JSON Object
-                        JSONObject phone = c.getJSONObject("phone");
-                        String mobile = phone.getString("mobile");
-                        String home = phone.getString("home");
-                        String office = phone.getString("office");
+                        betting.id = Integer.parseInt(jsonObjectBetting.get("id").toString());
+                        betting.metric_name = jsonObjectBetting.get("metric_name").toString();
+                        betting.winner = jsonObjectBetting.get("winner").toString();
+                        betting.game_id = Integer.parseInt(jsonObjectBetting.get("game_id").toString());
+                        betting.ticket_id = Integer.parseInt(jsonObjectBetting.get("ticket_id").toString());
+                        betting.created_at = jsonObjectBetting.get("created_at").toString();
+                        betting.updated_at = jsonObjectBetting.get("updated_at").toString();
+                        betting.deleted_at = jsonObjectBetting.get("deleted_at").toString();
 
-                        // tmp hash map for single contact
-                        HashMap<String, String> contact = new HashMap<>();
+                        JSONObject jsonObjectGame = jsonObjectBetting.getJSONObject("game");
 
-                        // adding each child node to HashMap key => value
-                        contact.put("id", id);
-                        contact.put("name", name);
-                        contact.put("email", email);
-                        contact.put("mobile", mobile);
+                        Game game = new Game();
+                        game.id = Integer.parseInt(jsonObjectGame.get("id").toString());
+                        game.user_id = Integer.parseInt(jsonObjectGame.get("user_id").toString());
+                        game.game_date = jsonObjectGame.get("game_date").toString();
+                        game.game_time = jsonObjectGame.get("game_time").toString();
+                        game.home_team = jsonObjectGame.get("home_team").toString();
+                        game.out_team = jsonObjectGame.get("out_team").toString();
+                        game.championship = jsonObjectGame.get("championship").toString();
+                        game.home_goals = jsonObjectGame.get("home_goals").toString();
+                        game.out_goals = jsonObjectGame.get("out_goals").toString();
 
-                        // adding contact to contact list
-                        contactList.add(contact);
+                        betting.game = game;
+                        bettings.add(betting);
                     }
+
+                    ticket.betting = bettings;
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
                     runOnUiThread(new Runnable() {
