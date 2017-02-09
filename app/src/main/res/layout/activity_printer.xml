@@ -52,6 +52,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
                         android:ems="10"
+                        android:text="http://104.236.126.197/bilhete/17/imprimir/android"
                         android:id="@+id/etTexto" />
 
                     <Button
