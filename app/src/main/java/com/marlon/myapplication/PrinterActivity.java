@@ -936,7 +936,7 @@ public class PrinterActivity extends AppCompatActivity {
             HttpHandler sh = new HttpHandler();
 
             // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
+            String jsonStr = sh.makeServiceCall(myTexto);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
