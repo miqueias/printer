@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,6 +53,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import network.PrinterServer;
@@ -68,7 +70,7 @@ public class PrinterActivity extends AppCompatActivity {
 
     // URL to get contacts JSON
     //private static String url = "http://api.androidhive.info/contacts/";
-    private static String url = "http://104.236.126.197/bilhete/17/imprimir/android";
+    private static String url = "http://104.236.126.197/bilhete/12/imprimir/android";
 
 
     ArrayList<HashMap<String, String>> contactList;
@@ -119,6 +121,20 @@ public class PrinterActivity extends AppCompatActivity {
         lv = (ListView) findViewById(R.id.list);
         etTexto = (EditText) findViewById(R.id.etTexto);
 
+        Uri data = getIntent().getData();
+
+        if (data != null) {
+            String scheme = data.getScheme(); // "http"
+            String host = data.getHost(); // "twitter.com"
+            List<String> params = data.getPathSegments();
+            String first = params.get(0); // "status"
+            String second = params.get(1); // "1234"
+
+            if (!second.equals("")) {
+                url = "http://104.236.126.197/bilhete/"+second+"/imprimir/android";
+                etTexto.setText(url);
+            }
+        }
 
         new GetContacts().execute();
 
@@ -681,26 +697,37 @@ public class PrinterActivity extends AppCompatActivity {
 
                 if (ticket != null) {
 
+                    int contJogos = 0;
+                    double valorFinal = 0;
+
                     myTexto = "";
-                    myTexto = myTexto + "Jogador: " + ticket.gambler_name + "\n";
-                    myTexto = myTexto + "Valor da Aposta: " + ticket.ticket_value + "\n";
-                    myTexto = myTexto + "Data da Aposta: " + ticket.validated_date + "\n";
-                    myTexto = myTexto + "CPF: " + ticket.validator.cpf + "\n\n";
-                    myTexto = myTexto + "=== APOSTAS ===" + "\n";
+                    myTexto = myTexto + "MeioNorte Sports" + "\n";
+                    myTexto = myTexto + "Apostador: " + ticket.gambler_name + "\n";
+                    myTexto = myTexto + "Cambista: " + ticket.validator.first_name + "\n";
+                    myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";
+                    myTexto = myTexto + "Horário: " + ticket.updated_at + "\n\n";
 
                     if (ticket.betting.size() > 0) {
                         for (int i = 0; i < ticket.betting.size(); i++) {
 
                             Betting betting = ticket.betting.get(i);
 
-                            myTexto = myTexto + "Jogo: " + betting.game.home_team + " x " + betting.game.out_team + "\n";
-                            myTexto = myTexto + "Campeonato: " + betting.game.championship + "\n";
-                            myTexto = myTexto + "Data do Jogo: " + betting.game.game_date + "\n";
-                            myTexto = myTexto + "Hora do Jogo: " + betting.game.game_time + "\n";
-                            myTexto = myTexto + "\n";
+                            myTexto = myTexto + "Jogo: " + betting.getGame().getHome_team() + " x " + betting.getGame().getOut_team() + "\n";
+                            myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
+                            myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
+                            myTexto = myTexto + "Casa: " + betting.getGame().getHouse() + "\n";
+                            myTexto = myTexto + "\n\n";
 
-                            betting = null;
+                            //betting = null;
+                            contJogos++;
+                            valorFinal = valorFinal + (Double.parseDouble(ticket.ticket_value) * Double.parseDouble(betting.getGame().getHouse()));
                         }
+
+
+                        myTexto = myTexto + "Qtd. de Jogos: " + contJogos + "\n`";
+                        myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";;
+                        myTexto = myTexto + "Retorno Possível: " + valorFinal + "\n";;
+
                     }
                 } else {
                     myTexto = "NÃO HÁ DADOS PARA IMPRIMIR";
@@ -710,6 +737,7 @@ public class PrinterActivity extends AppCompatActivity {
 
                 printer.reset();
                 printer.printTaggedText(textBuffer.toString());
+                printer.setAlign(Printer.ALIGN_CENTER);
                 printer.feedPaper(110);
                 printer.flush();
             }
@@ -936,7 +964,8 @@ public class PrinterActivity extends AppCompatActivity {
             HttpHandler sh = new HttpHandler();
 
             // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(myTexto);
+            //String jsonStr = sh.makeServiceCall(myTexto);
+            String jsonStr = sh.makeServiceCall(url);
 
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -984,36 +1013,35 @@ public class PrinterActivity extends AppCompatActivity {
 
                     JSONArray jsonArrayBetting = jsonObj.getJSONArray("betting");
 
-                    // looping through All Contacts
-                    Betting betting = new Betting();
                     ArrayList<Betting> bettings = new ArrayList<>();
                     for (int i = 0; i < jsonArrayBetting.length(); i++) {
                         JSONObject jsonObjectBetting = jsonArrayBetting.getJSONObject(i);
 
-
-                        betting.id = Integer.parseInt(jsonObjectBetting.get("id").toString());
-                        betting.metric_name = jsonObjectBetting.get("metric_name").toString();
-                        betting.winner = jsonObjectBetting.get("winner").toString();
-                        betting.game_id = Integer.parseInt(jsonObjectBetting.get("game_id").toString());
-                        betting.ticket_id = Integer.parseInt(jsonObjectBetting.get("ticket_id").toString());
-                        betting.created_at = jsonObjectBetting.get("created_at").toString();
-                        betting.updated_at = jsonObjectBetting.get("updated_at").toString();
-                        betting.deleted_at = jsonObjectBetting.get("deleted_at").toString();
+                        Betting betting = new Betting();
+                        betting.setId(Integer.parseInt(jsonObjectBetting.get("id").toString()));
+                        betting.setMetric_name(jsonObjectBetting.get("metric_name").toString());
+                        betting.setWinner(jsonObjectBetting.get("winner").toString());
+                        betting.setGame_id(Integer.parseInt(jsonObjectBetting.get("game_id").toString()));
+                        betting.setTicket_id(Integer.parseInt(jsonObjectBetting.get("ticket_id").toString()));
+                        betting.setCreated_at(jsonObjectBetting.get("created_at").toString());
+                        betting.setUpdated_at(jsonObjectBetting.get("updated_at").toString());
+                        betting.setDeleted_at(jsonObjectBetting.get("deleted_at").toString());
 
                         JSONObject jsonObjectGame = jsonObjectBetting.getJSONObject("game");
 
                         Game game = new Game();
-                        game.id = Integer.parseInt(jsonObjectGame.get("id").toString());
-                        game.user_id = Integer.parseInt(jsonObjectGame.get("user_id").toString());
-                        game.game_date = jsonObjectGame.get("game_date").toString();
-                        game.game_time = jsonObjectGame.get("game_time").toString();
-                        game.home_team = jsonObjectGame.get("home_team").toString();
-                        game.out_team = jsonObjectGame.get("out_team").toString();
-                        game.championship = jsonObjectGame.get("championship").toString();
-                        game.home_goals = jsonObjectGame.get("home_goals").toString();
-                        game.out_goals = jsonObjectGame.get("out_goals").toString();
+                        game.setId(Integer.parseInt(jsonObjectGame.get("id").toString()));
+                        game.setUser_id(Integer.parseInt(jsonObjectGame.get("user_id").toString()));
+                        game.setGame_date(jsonObjectGame.get("game_date").toString());
+                        game.setGame_time(jsonObjectGame.get("game_time").toString());
+                        game.setHome_team(jsonObjectGame.get("home_team").toString());
+                        game.setOut_team(jsonObjectGame.get("out_team").toString());
+                        game.setChampionship(jsonObjectGame.get("championship").toString());
+                        game.setHome_goals(jsonObjectGame.get("home_goals").toString());
+                        game.setOut_goals(jsonObjectGame.get("out_goals").toString());
+                        game.setHouse(jsonObjectGame.get("house").toString());
 
-                        betting.game = game;
+                        betting.setGame(game);
                         bettings.add(betting);
                     }
 
