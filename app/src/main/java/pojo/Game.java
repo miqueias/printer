@@ -15,7 +15,22 @@ public class Game {
     private String championship;
     private String home_goals;
     private String out_goals;
-    private String house;
+    private Double house;
+    private Double xc;
+    private Double xf;
+    private Double gmc;
+    private Double gmf;
+    private Double amb;
+    private Double na;
+    private Double two_gm_plus;
+    private Double two_gm_low;
+    private Double cvfm;
+    private Double tcvg;
+    private Double eg;
+    private Double egg;
+    private Double tie;
+    private Double visitor;
+
 
     public Game() {
 
@@ -93,11 +108,123 @@ public class Game {
         this.out_goals = out_goals;
     }
 
-    public String getHouse() {
+    public Double getHouse() {
         return house;
     }
 
-    public void setHouse(String house) {
+    public void setHouse(Double house) {
         this.house = house;
+    }
+
+    public Double getXc() {
+        return xc;
+    }
+
+    public void setXc(Double xc) {
+        this.xc = xc;
+    }
+
+    public Double getXf() {
+        return xf;
+    }
+
+    public void setXf(Double xf) {
+        this.xf = xf;
+    }
+
+    public Double getGmc() {
+        return gmc;
+    }
+
+    public void setGmc(Double gmc) {
+        this.gmc = gmc;
+    }
+
+    public Double getGmf() {
+        return gmf;
+    }
+
+    public void setGmf(Double gmf) {
+        this.gmf = gmf;
+    }
+
+    public Double getAmb() {
+        return amb;
+    }
+
+    public void setAmb(Double amb) {
+        this.amb = amb;
+    }
+
+    public Double getNa() {
+        return na;
+    }
+
+    public void setNa(Double na) {
+        this.na = na;
+    }
+
+    public Double getTwo_gm_plus() {
+        return two_gm_plus;
+    }
+
+    public void setTwo_gm_plus(Double two_gm_plus) {
+        this.two_gm_plus = two_gm_plus;
+    }
+
+    public Double getTwo_gm_low() {
+        return two_gm_low;
+    }
+
+    public void setTwo_gm_low(Double two_gm_low) {
+        this.two_gm_low = two_gm_low;
+    }
+
+    public Double getCvfm() {
+        return cvfm;
+    }
+
+    public void setCvfm(Double cvfm) {
+        this.cvfm = cvfm;
+    }
+
+    public Double getTcvg() {
+        return tcvg;
+    }
+
+    public void setTcvg(Double tcvg) {
+        this.tcvg = tcvg;
+    }
+
+    public Double getEg() {
+        return eg;
+    }
+
+    public void setEg(Double eg) {
+        this.eg = eg;
+    }
+
+    public Double getEgg() {
+        return egg;
+    }
+
+    public void setEgg(Double egg) {
+        this.egg = egg;
+    }
+
+    public Double getTie() {
+        return tie;
+    }
+
+    public void setTie(Double tie) {
+        this.tie = tie;
+    }
+
+    public Double getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(Double visitor) {
+        this.visitor = visitor;
     }
 }

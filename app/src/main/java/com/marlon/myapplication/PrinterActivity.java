@@ -705,28 +705,112 @@ public class PrinterActivity extends AppCompatActivity {
                     myTexto = myTexto + "Apostador: " + ticket.gambler_name + "\n";
                     myTexto = myTexto + "Cambista: " + ticket.validator.first_name + "\n";
                     myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";
-                    myTexto = myTexto + "Horário: " + ticket.updated_at + "\n\n";
+                    myTexto = myTexto + "Horario: " + ticket.updated_at + "\n";
+                    myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n\n";
 
                     if (ticket.betting.size() > 0) {
                         for (int i = 0; i < ticket.betting.size(); i++) {
 
                             Betting betting = ticket.betting.get(i);
 
+                            String metrincName = "";
+                            Double modificador = 0.0;
+
+                            switch (betting.getMetric_name()) {
+                                case "xc":
+                                    metrincName = "XC";
+                                    modificador = betting.getGame().getXc();
+
+                                    break;
+                                case "xf":
+                                    metrincName = "XF";
+                                    modificador = betting.getGame().getXf();
+
+                                    break;
+                                case "gmc":
+                                    metrincName = "GMC";
+                                    modificador = betting.getGame().getGmc();
+
+                                    break;
+                                case "gmf":
+                                    metrincName = "GMF";
+                                    modificador = betting.getGame().getGmf();
+
+                                    break;
+                                case "amb":
+                                    metrincName = "AMB";
+                                    modificador = betting.getGame().getAmb();
+
+                                    break;
+                                case "na":
+                                    metrincName = "NA";
+                                    modificador = betting.getGame().getNa();
+
+                                    break;
+                                case "two_gm_plus":
+                                    metrincName = "TWO GM PLUS";
+                                    modificador = betting.getGame().getTwo_gm_plus();
+
+                                    break;
+                                case "two_gm_low":
+                                    metrincName = "TWO GM LOW";
+                                    modificador = betting.getGame().getTwo_gm_low();
+
+                                    break;
+                                case "cvfm":
+                                    metrincName = "CVFM";
+                                    modificador = betting.getGame().getCvfm();
+
+                                    break;
+                                case "tcvg":
+                                    metrincName = "TCVG";
+                                    modificador = betting.getGame().getTcvg();
+
+                                    break;
+                                case "eg":
+                                    metrincName = "EG";
+                                    modificador = betting.getGame().getEg();
+
+                                    break;
+                                case "egg":
+                                    metrincName = "EGG";
+                                    modificador = betting.getGame().getEgg();
+
+                                    break;
+                                case "house":
+                                    metrincName = "CASA";
+                                    modificador = betting.getGame().getHouse();
+
+                                    break;
+                                case "tie":
+                                    metrincName = "EMPATE";
+                                    modificador = betting.getGame().getTie();
+
+                                    break;
+                                case "visitor":
+                                    metrincName = "VISITANTE";
+                                    modificador = betting.getGame().getVisitor();
+
+                                    break;
+                            }
+
+
                             myTexto = myTexto + "Jogo: " + betting.getGame().getHome_team() + " x " + betting.getGame().getOut_team() + "\n";
                             myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
                             myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
-                            myTexto = myTexto + "Casa: " + betting.getGame().getHouse() + "\n";
+                            myTexto = myTexto + metrincName +": "+ betting.getGame().getHouse() + "\n";
                             myTexto = myTexto + "\n\n";
 
                             //betting = null;
                             contJogos++;
-                            valorFinal = valorFinal + (Double.parseDouble(ticket.ticket_value) * Double.parseDouble(betting.getGame().getHouse()));
+                            valorFinal = valorFinal + (Double.parseDouble(ticket.ticket_value) * modificador);
                         }
-
 
                         myTexto = myTexto + "Qtd. de Jogos: " + contJogos + "\n`";
                         myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";;
-                        myTexto = myTexto + "Retorno Possível: " + valorFinal + "\n";;
+                        myTexto = myTexto + "Retorno Possível: " + valorFinal + "\n";
+                        myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n\n";
+                        myTexto = myTexto + "Limite de prémios: R$ 20.000,00 e temos até 48hs para realizar o pagamento.";
 
                     }
                 } else {
@@ -1039,7 +1123,21 @@ public class PrinterActivity extends AppCompatActivity {
                         game.setChampionship(jsonObjectGame.get("championship").toString());
                         game.setHome_goals(jsonObjectGame.get("home_goals").toString());
                         game.setOut_goals(jsonObjectGame.get("out_goals").toString());
-                        game.setHouse(jsonObjectGame.get("house").toString());
+                        game.setHouse(Double.parseDouble(jsonObjectGame.get("house").toString()));
+                        game.setXc(Double.parseDouble(jsonObjectGame.get("xc").toString()));
+                        game.setXf(Double.parseDouble(jsonObjectGame.get("xf").toString()));
+                        game.setGmc(Double.parseDouble(jsonObjectGame.get("gmc").toString()));
+                        game.setGmf(Double.parseDouble(jsonObjectGame.get("gmf").toString()));
+                        game.setAmb(Double.parseDouble(jsonObjectGame.get("amb").toString()));
+                        game.setNa(Double.parseDouble(jsonObjectGame.get("na").toString()));
+                        game.setTwo_gm_plus(Double.parseDouble(jsonObjectGame.get("two_gm_plus").toString()));
+                        game.setTwo_gm_low(Double.parseDouble(jsonObjectGame.get("two_gm_low").toString()));
+                        game.setCvfm(Double.parseDouble(jsonObjectGame.get("cvfm").toString()));
+                        game.setTcvg(Double.parseDouble(jsonObjectGame.get("tcvg").toString()));
+                        game.setEg(Double.parseDouble(jsonObjectGame.get("eg").toString()));
+                        game.setEgg(Double.parseDouble(jsonObjectGame.get("egg").toString()));
+                        game.setTie(Double.parseDouble(jsonObjectGame.get("tie").toString()));
+                        game.setVisitor(Double.parseDouble(jsonObjectGame.get("visitor").toString()));
 
                         betting.setGame(game);
                         bettings.add(betting);
