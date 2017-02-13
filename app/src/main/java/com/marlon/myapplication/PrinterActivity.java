@@ -798,7 +798,7 @@ public class PrinterActivity extends AppCompatActivity {
                             myTexto = myTexto + "Jogo: " + betting.getGame().getHome_team() + " x " + betting.getGame().getOut_team() + "\n";
                             myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
                             myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
-                            myTexto = myTexto + metrincName +": "+ betting.getGame().getHouse() + "\n";
+                            myTexto = myTexto + metrincName +": "+ modificador + "\n";
                             myTexto = myTexto + "\n\n";
 
                             //betting = null;
