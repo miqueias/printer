@@ -123,18 +123,7 @@ public class PrinterActivity extends AppCompatActivity {
 
         Uri data = getIntent().getData();
 
-        if (data != null) {
-            String scheme = data.getScheme(); // "http"
-            String host = data.getHost(); // "twitter.com"
-            List<String> params = data.getPathSegments();
-            String first = params.get(0); // "status"
-            String second = params.get(1); // "1234"
-
-            if (!second.equals("")) {
-                url = "http://104.236.126.197/bilhete/"+second+"/imprimir/android";
-                etTexto.setText(url);
-            }
-        }
+        getParamsUrl();
 
         new GetContacts().execute();
 
@@ -173,6 +162,31 @@ public class PrinterActivity extends AppCompatActivity {
 
         waitForConnection();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getParamsUrl();
+    }
+
+    private void getParamsUrl() {
+        Uri data = getIntent().getData();
+
+        if (data != null) {
+            String scheme = data.getScheme(); // "http"
+            String host = data.getHost(); // "twitter.com"
+            List<String> params = data.getPathSegments();
+            String first = params.get(0); // "status"
+            String second = params.get(1); // "1234"
+
+            if (!second.equals("")) {
+                url = "http://104.236.126.197/bilhete/"+second+"/imprimir/android";
+                etTexto.setText(url);
+            }
+        }
+    }
+
+
 
     @Override
     protected void onDestroy() {
@@ -702,11 +716,12 @@ public class PrinterActivity extends AppCompatActivity {
 
                     myTexto = "";
                     myTexto = myTexto + "MeioNorte Sports" + "\n";
+                    myTexto = myTexto + "Identificacao:" + ticket.id + "\n";
                     myTexto = myTexto + "Apostador: " + ticket.gambler_name + "\n";
                     myTexto = myTexto + "Cambista: " + ticket.validator.first_name + "\n";
                     myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";
                     myTexto = myTexto + "Horario: " + ticket.updated_at + "\n";
-                    myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n\n";
+                    myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n";
 
                     if (ticket.betting.size() > 0) {
                         for (int i = 0; i < ticket.betting.size(); i++) {
@@ -748,12 +763,12 @@ public class PrinterActivity extends AppCompatActivity {
 
                                     break;
                                 case "two_gm_plus":
-                                    metrincName = "TWO GM PLUS";
+                                    metrincName = "+2GM";
                                     modificador = betting.getGame().getTwo_gm_plus();
 
                                     break;
                                 case "two_gm_low":
-                                    metrincName = "TWO GM LOW";
+                                    metrincName = "-2GM";
                                     modificador = betting.getGame().getTwo_gm_low();
 
                                     break;
@@ -795,22 +810,25 @@ public class PrinterActivity extends AppCompatActivity {
                             }
 
 
-                            myTexto = myTexto + "Jogo: " + betting.getGame().getHome_team() + " x " + betting.getGame().getOut_team() + "\n";
-                            myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
-                            myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
+                            myTexto = myTexto + betting.getGame().getGame_date() + " " + betting.getGame().getGame_time() + " " +
+                                    betting.getGame().getHome_team().toUpperCase() + " x " + betting.getGame().getOut_team().toUpperCase() + "\n";
+                            //myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
+                            //myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
                             myTexto = myTexto + metrincName +": "+ modificador + "\n";
-                            myTexto = myTexto + "\n\n";
+                            myTexto = myTexto + "\n";
 
                             //betting = null;
                             contJogos++;
                             valorFinal = valorFinal + (Double.parseDouble(ticket.ticket_value) * modificador);
                         }
 
-                        myTexto = myTexto + "Qtd. de Jogos: " + contJogos + "\n`";
+                        myTexto = myTexto + "\n";
+
+                        myTexto = myTexto + "Qtd. de Jogos: " + contJogos + "\n";
                         myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";;
-                        myTexto = myTexto + "Retorno Possível: " + valorFinal + "\n";
-                        myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n\n";
-                        myTexto = myTexto + "Limite de prémios: R$ 20.000,00 e temos até 48hs para realizar o pagamento.";
+                        myTexto = myTexto + "Retorno Possivel: " + valorFinal + "\n";
+                        myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n";
+                        myTexto = myTexto + "Limite de pemios: R$ 20.000,00 e temos ate 48hs para realizar o pagamento.";
 
                     }
                 } else {
