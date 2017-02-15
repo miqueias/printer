@@ -169,6 +169,12 @@ public class PrinterActivity extends AppCompatActivity {
         getParamsUrl();
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        getParamsUrl();
+    }
+
     private void getParamsUrl() {
         Uri data = getIntent().getData();
 
@@ -815,7 +821,6 @@ public class PrinterActivity extends AppCompatActivity {
                             //myTexto = myTexto + "Data do Jogo: " + betting.getGame().getGame_date() + "\n";
                             //myTexto = myTexto + "Hora do Jogo: " + betting.getGame().getGame_time() + "\n";
                             myTexto = myTexto + metrincName +": "+ modificador + "\n";
-                            myTexto = myTexto + "\n";
 
                             //betting = null;
                             contJogos++;
@@ -842,6 +847,8 @@ public class PrinterActivity extends AppCompatActivity {
                 printer.setAlign(Printer.ALIGN_CENTER);
                 printer.feedPaper(110);
                 printer.flush();
+
+
             }
         }, R.string.msg_printing_text);
     }
