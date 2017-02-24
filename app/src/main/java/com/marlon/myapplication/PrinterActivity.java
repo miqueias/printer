@@ -49,6 +49,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -729,6 +730,8 @@ public class PrinterActivity extends AppCompatActivity {
                     myTexto = myTexto + "Horario: " + ticket.updated_at + "\n";
                     myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n";
 
+                    valorFinal = Double.parseDouble(ticket.ticket_value);
+
                     if (ticket.betting.size() > 0) {
                         for (int i = 0; i < ticket.betting.size(); i++) {
 
@@ -824,13 +827,18 @@ public class PrinterActivity extends AppCompatActivity {
 
                             //betting = null;
                             contJogos++;
-                            valorFinal = valorFinal + (Double.parseDouble(ticket.ticket_value) * modificador);
+                            valorFinal *= modificador;//  valorFinal + (Double.parseDouble(ticket.ticket_value) * modificador);
                         }
 
-                        myTexto = myTexto + "\n";
-
+                        myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n";
                         myTexto = myTexto + "Qtd. de Jogos: " + contJogos + "\n";
                         myTexto = myTexto + "Valor Apostado: " + ticket.ticket_value + "\n";;
+
+                        int decimalPlaces = 2;
+                        BigDecimal bd = new BigDecimal(valorFinal);
+                        bd = bd.setScale(decimalPlaces, BigDecimal.ROUND_HALF_UP);
+                        valorFinal = bd.doubleValue();
+
                         myTexto = myTexto + "Retorno Possivel: " + valorFinal + "\n";
                         myTexto = myTexto + "- - - - - - - - - - - - - - - - - - - -" + "\n";
                         myTexto = myTexto + "Limite de pemios: R$ 20.000,00 e temos ate 48hs para realizar o pagamento.";
